@@ -35,6 +35,35 @@ const serverUrlProd = 'http://exploding-kitchen.us-west-1.elasticbeanstalk.com/a
 const url = (serverEnv === 'production') ? serverUrlProd : serverUrlLocal;
 
 /**
+ * load challenges
+ * @returns {Promise&lt;void>}
+ */
+async function loadChallenges() {
+  await loadChallengesFromFile()
+    .then((challenges) => {
+      saveChallenges(challenges);
+    });
+}
+
+/**
+ * TODO: change the following to match the challenges.json (will need a new route).
+ * Fetches the challenge list from file.
+ * @returns {Promise} Resolves with the challenge list json if successful, rejects otherwise.
+ */
+async function loadChallengesFromFile() {
+  return new Promise((resolve, reject) => {
+    fetch('assets/jsons/challenges.json')
+      .then((response) => response.json())
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+/**
  * Adds a recipe to the database.
  * If a recipe of the same name already exists, does not add in the recipe.
  * This function must only be called after calling loadDB().
@@ -224,9 +253,11 @@ async function getById(id) {
  * @returns {JSON} The challenge list JSON
  */
 function getChallenges() {
+  console.log(localStorage.getItem('challenges'));
   return JSON.parse(localStorage.getItem('challenges'));
 }
 
+database.loadChallenges = loadChallenges;
 database.addRecipe = addRecipe;
 database.updateRecipe = updateRecipe;
 database.deleteRecipe = deleteRecipe;
@@ -245,13 +276,13 @@ database.getChallenges = getChallenges;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#countRecipes">countRecipes</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#saveChallenges">saveChallenges</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#countRecipes">countRecipes</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallenges">loadChallenges</a></li><li><a href="global.html#loadChallengesFromFile">loadChallengesFromFile</a></li><li><a href="global.html#saveChallenges">saveChallenges</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun May 29 2022 00:21:48 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sun May 29 2022 00:33:31 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
