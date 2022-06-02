@@ -448,7 +448,7 @@ class RecipeDisplay extends HTMLElement {
       this.shadowRoot.querySelector('#recipe-ingredients > .ingredient-list').appendChild(ingredientContainer);
     });
 
-    const directions  = data.directions.split(/\r?\n/);
+    const directions = data.directions.split(/\r?\n/);
     directions.forEach((direction) => {
       const directionContainer = createCheckbox(direction);
       this.shadowRoot.querySelector('#recipe-directions > .recipe-list').appendChild(directionContainer);
@@ -530,11 +530,11 @@ class RecipeDisplay extends HTMLElement {
     const challengeHeader = document.createElement('ol');
     challengeHeader.classList.add('challenge-header');
     challengeHeader.innerHTML = '<br><br>Included in Challenges';
-    //data.challenges.forEach((childChallenge) => {
-      const li = document.createElement('li');
-      li.innerHTML = data.challenge;
-      challengeHeader.append(li);
-    //});
+    // data.challenges.forEach((childChallenge) => {
+    const li = document.createElement('li');
+    li.innerHTML = data.challenge;
+    challengeHeader.append(li);
+    // });
     dummyChild.parentElement.appendChild(challengeHeader);
   }
 }
@@ -545,9 +545,9 @@ class RecipeDisplay extends HTMLElement {
  * @returns string to display time
  */
 function calculateTime(minutes) {
-  let time = {
+  const time = {
     hours: Math.floor(minutes / 60),
-    minutes: minutes % 60
+    minutes: minutes % 60,
   };
 
   let timeString = '';
