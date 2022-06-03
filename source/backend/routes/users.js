@@ -16,7 +16,7 @@ router.get('/completedRecipes', verifyUserToken, async (req, res) => {
     console.error(err);
     return res.status(503).json({
       message: 'Failed to get completed recipes',
-      err,
+      err
     });
   }
 });
@@ -24,14 +24,14 @@ router.get('/completedRecipes', verifyUserToken, async (req, res) => {
 /* GET users/savedRecipes */
 router.get('/savedRecipes', verifyUserToken, async (req, res) => {
   try {
-    const { userId } = req.userInfo;
+    const { userId }  = req.userInfo;
     const savedRecipesList = await savedRecipesModel.getByUserIdAndRecipeId(userId);
     return res.status(200).json(savedRecipesList);
   } catch (err) {
     console.error(err);
     return res.status(503).json({
       message: 'Failed to get saved recipes',
-      err,
+      err
     });
   }
 });
@@ -41,26 +41,27 @@ router.get('/challenge/:challenge', async (req, res) => {
   try {
     const { userId } = req.userInfo;
     const { challenge } = req.params;
+    
+    const challenges = ["Two Spicy", "Habanero Hero", "Haunted Bowels", "I Got the Sauce", "Spicy Sips"];
+    const challengeParsed = challenge.replace(/\+/g, " ");
 
-    const challenges = ['Two Spicy', 'Habanero Hero', 'Haunted Bowels', 'I Got the Sauce', 'Spicy Sips'];
-    const challengeParsed = challenge.replace(/\+/g, ' ');
-
-    if (!challenges.includes(challengeParsed)) {
+    if(!challenges.includes(challengeParsed)) {
       return res.status(400)
-        .json({
+        .json({ 
           message: 'Invalid challenge',
-          err,
-        });
+          err
+         });
     }
 
     const completedChallenges = await completedRecipesModel.getCompletedChallenges(userId, challengeParsed);
 
     return res.status(200).json(completedChallenges);
+
   } catch (err) {
     console.error(err);
     return res.status(503).json({
       message: 'Failed to get completed challenges',
-      err,
+      err
     });
   }
 });
@@ -96,8 +97,9 @@ router.delete('/savedRecipes/:savedRecipeId', verifyUserToken, async (req, res) 
     const { savedRecipeId } = req.params;
 
     await savedRecipesModel.deleteByUserIdAndSavedRecipeId(userId, savedRecipeId);
-
-    return res.status(200).json({ msg: 'Removed successfully' });
+    
+    return res.status(200).json({msg: 'Removed successfully'});
+    
   } catch (err) {
     console.error(err);
     return res.status(503).json({
@@ -117,15 +119,15 @@ router.post('/savedRecipes/:recipeId', verifyUserToken, async (req, res) => {
     // Check if the recipe has already been completed
     const checkSaved = await savedRecipesModel.getSavedRecipeByUserIdAndRecipeId(userId, recipeId);
     if (checkSaved.length != 0) {
-      return res.status(401).json({ msg: 'Recipe has already been saved' });
+      return res.status(401).json({msg: "Recipe has already been saved"});
     }
 
     await savedRecipesModel.addSavedRecipe(userId, recipeId);
-    return res.status(200).json({ msg: 'Added recipe successfully' });
+    return res.status(200).json({msg: 'Added recipe successfully'})
   } catch (err) {
     console.error(err);
     return res.status(503).json({
-      msg: 'Failed to get add saved recipe',
+      msg: 'Failed to get add saved recipe'
     });
   }
 });
@@ -139,16 +141,16 @@ router.post('/completedRecipes/:recipeId', async (req, res) => {
     // Check if the recipe has already been completed
     const checkCompleted = await completedRecipesModel.getByRecipeIdAndUserId(recipeId, userId);
     if (checkCompleted.length != 0) {
-      return res.status(409).json({ msg: 'Recipe has already been completed' });
+      return res.status(409).json({msg: "Recipe has already been completed"});
     }
-
+    
     await completedRecipesModel.addToCompletedList(recipeId, userId);
-    return res.status(200).json({ msg: 'Successfully added recipe to completed list' });
+    return res.status(200).json({msg: "Successfully added recipe to completed list"});
   } catch (err) {
     console.error(err);
     return res.status(503).json({
       message: 'Failed to add new recipe to user\'s completed list',
-      err,
+      err
     });
   }
 });
