@@ -161,7 +161,11 @@ async function getBySpice(spiceLevel) {
     } if (spiceLevel < 1 || spiceLevel > 5) {
       return new Error('Spice level out of range!');
     }
-    const response = await fetch(`${url}/recipes/spiceRating/${spiceLevel}`);
+    const response = await fetch(`${url}/recipes/spiceRating/${spiceLevel}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
     const recipe = await response.json();
     return recipe;
   } catch (err) {

@@ -122,7 +122,7 @@ router.get('/challenge/:challenge', async (req, res) => {
 /*
   Get Recipes by spiceRating
 */
-router.get('/spiceRating/:spiceRating', async (req, res) => {
+router.get('/spiceRating/:spiceRating', verifyUserTokenIfExists, async (req, res) => {
   try {
     const { spiceRating } = req.params;
     const rows = await recipesModel.getBySpiceRating(spiceRating);
@@ -132,10 +132,14 @@ router.get('/spiceRating/:spiceRating', async (req, res) => {
 
     const recipes = rows;
     const recipeIngredients = await recipeIngredientsModel.getAllRecipeIngredients();
+    let completedRecipes = [];
+    if (req.userInfo) {
+      completedRecipes = await completedRecipesModel.getCompletedRecipes(req.userInfo.userId);
+    }
     await Promise.all(await recipes.map((recipe) => {
       recipe.ingredientList = recipeIngredients.filter((recipeIngredient) => recipeIngredient.recipeId === recipe.recipeId);
+      recipe.completed = completedRecipes.findIndex((completed) => completed.recipeId === recipe.recipeId) !== -1;
     }));
-
     return res.status(200).json(recipes);
   } catch (err) {
     console.error(err);
