@@ -475,7 +475,8 @@ class RecipeDisplay extends HTMLElement {
     } else {
       this.bindCompleteButton(data);
     }
-    if (data.challenge != 'No Challenge') {
+
+    if (data.challenge !== 'No Challenge') {
       this.ShowChallenge(data);
     }
   }
@@ -501,7 +502,12 @@ class RecipeDisplay extends HTMLElement {
     const btn = this.shadowRoot.getElementById('made-this-button');
     btn.addEventListener('click', () => {
       RecipeDisplay.jSConfetti.addConfetti({ emojis: ['🥵', '🔥', '🌶️'] });
-      if (data.completed === false) {
+      const completed = false;
+      // TODO: If not logged in then display modal
+
+      if (!completed) {
+        console.log('complete');
+        database.loginUser();
         database.completeRecipe(data);
         const newBox = document.createElement('completed');
         newBox.innerHTML = 'Completed!';

@@ -1,7 +1,7 @@
 // database.js
 export const database = {};
 
-const serverEnv = 'production';
+const serverEnv = 'local';
 const serverUrlLocal = 'http://localhost:3000';
 const serverUrlProd = 'http://exploding-kitchen.us-west-1.elasticbeanstalk.com/api';
 const url = (serverEnv === 'production') ? serverUrlProd : serverUrlLocal;
@@ -76,34 +76,76 @@ function saveChallenges(challengeJSON) {
   const challengeString = JSON.stringify(challengeJSON);
   localStorage.setItem('challenges', challengeString);
 }
+
+/**
+ * TEST LOGIN
+ * @param
+ * @returns
+ */
+async function loginUser() {
+  try {
+    const data = {
+      username: 'joe',
+      password: '1',
+    };
+    const response = await fetch(`${url}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    const token = await response.json();
+    localStorage.setItem('token', token.accessToken);
+    console.log(token);
+    return true;
+  } catch (err) {
+    return new Error('Couldnt login');
+  }
+}
+
 /**
  * TODO: lots of refactoring of this function
  * @param recipeJSON
  * @returns {Promise<unknown>}
  */
 async function completeRecipe(recipeJSON) {
-  return new Promise((resolve, reject) => {
-    // TODO: get it from the backend
-    const challengeJSON = JSON.parse(localStorage.getItem('challenges'));
+  try {
+    if (recipeJSON === null) {
+      return new Error('No recipe to complete.');
+    }
+    console.log(recipeJSON);
+
+    // Save the recipe to the completedRecipes table
+    const postRecipe = await fetch(`${url}/users/completedRecipes/${recipeJSON.recipeId}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    console.log(await postRecipe.json());
+
+    // Get all challenges and increment
+    const challenges = await fetch(`${url}/recipes/challenges`);
+    const challengeJSON = await challenges.json();
 
     // KEEP
-    for (let i = 0; i < recipeJSON.challenges.length; i += 1) {
-      for (let j = 0; j < challengeJSON.challenges.length; j += 1) {
-        if (challengeJSON.challenges[j].title === recipeJSON.challenges[i]) {
-          challengeJSON.challenges[j].numberCompleted += 1;
-          break;
-        }
-      }
+    const challengeIdx = challengeJSON.challengesWithRecipes.findIndex(
+      (challenge) => challenge.title === recipeJSON.challenge,
+    );
+    if (challengeIdx !== -1) {
+      challengeJSON.challengesWithRecipes[challengeIdx].numberCompleted += 1;
     }
+    console.log(challengeJSON);
 
-    // KEEP below
-    recipeJSON.completed = true;
     updateRecipe(recipeJSON)
       .then(() => {
         saveChallenges(challengeJSON);
-        resolve(true);
       });
-  });
+    return true;
+  } catch (err) {
+    return new Error('Unable to complete recipe.');
+  }
 }
 
 /**
@@ -116,7 +158,7 @@ async function getBySpice(spiceLevel) {
   try {
     if (typeof spiceLevel !== 'number') {
       return new Error('Query was not a number!');
-    } else if (spiceLevel < 1 || spiceLevel > 5) {
+    } if (spiceLevel < 1 || spiceLevel > 5) {
       return new Error('Spice level out of range!');
     }
     const response = await fetch(`${url}/recipes/spiceRating/${spiceLevel}`);
@@ -237,3 +279,4 @@ database.getBySpice = getBySpice;
 database.getByName = getByName;
 database.getById = getById;
 database.getChallenges = getChallenges;
+database.loginUser = loginUser;
