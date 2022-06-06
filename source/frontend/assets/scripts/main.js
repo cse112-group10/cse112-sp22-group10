@@ -43,6 +43,7 @@ async function init() {
   sliderSpiceLevel();
   createProgressBars();
   onLoginFormSubmit();
+  onSignupFormSubmit();
   attachLoggedInComponents();
 }
 
@@ -405,7 +406,7 @@ async function bindProgressBar(challengeBar, challenge) {
 }
 
 /**
- * when the login form is submitteed
+ * when the login form is submitted
  * @returns {Promise<void>}
  */
 async function onLoginFormSubmit() {
@@ -422,7 +423,43 @@ async function onLoginFormSubmit() {
       return;
     }
     document.getElementById('close-login-modal').click();
-    attachLoggedInComponents();
+    init();
+  });
+}
+
+/**
+ * when the signup form is submitted
+ * @returns {Promise<void>}
+ */
+async function onSignupFormSubmit() {
+  const signupForm = document.getElementById('signupForm');
+  signupForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (document.getElementById('signup-password').value
+    !== document.getElementById('repeat-password').value) {
+      alert('Password needs to match! 😤');
+      return;
+    }
+
+    const user = {
+      username: document.getElementById('signup-username').value,
+      password: document.getElementById('signup-password').value,
+      email: document.getElementById('signup-email').value,
+    };
+    const data = await database.signup(user);
+    if (!data.newUser) {
+      alert(data.msg);
+      return;
+    }
+    alert('Signup successful! Welcome to exploding kitchen! 💣💥🧑‍🍳');
+    const loginData = await database.login(user);
+    if (!loginData.accessToken) {
+      alert(data.message);
+      return;
+    }
+    document.getElementById('close-signup-modal').click();
+    init();
   });
 }
 

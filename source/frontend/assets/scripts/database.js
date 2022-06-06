@@ -1,7 +1,7 @@
 // database.js
 export const database = {};
 
-const serverEnv = 'production';
+const serverEnv = 'local';
 const serverUrlLocal = 'http://localhost:3000';
 const serverUrlProd = 'http://exploding-kitchen.us-west-1.elasticbeanstalk.com/api';
 const url = (serverEnv === 'production') ? serverUrlProd : serverUrlLocal;
@@ -198,6 +198,27 @@ async function login(userPayload) {
 }
 
 /**
+ * signup user by calling /auth/signup, and after user signed up, call login.
+ * @param userPayload
+ * @returns {Promise<Error>}
+ */
+async function signup(userPayload) {
+  try {
+    const response = await fetch(`${url}/auth/signup/`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userPayload), // body data type must match "Content-Type" header
+    });
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    return new Error('Password or username incorrect, please try again');
+  }
+}
+
+/**
  * set the user access token
  * @param token
  */
@@ -223,3 +244,4 @@ database.getByName = getByName;
 database.getById = getById;
 database.getChallenges = getChallenges;
 database.login = login;
+database.signup = signup;
