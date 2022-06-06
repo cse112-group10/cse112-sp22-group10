@@ -67,6 +67,17 @@ class RecipeCard extends HTMLElement {
       padding: 0 0.6rem 0 1rem;
     }
 
+    .completed {
+      opacity: 0.66;
+      background-color: #dde3ed;
+    }
+
+    .checkmark {
+      position: absolute;
+      transform: translate(60%, 50%); 
+      font-size: 75px;
+    }
+
     @media (prefers-color-scheme: dark) {
       .recipe-card {
         background-color: var(--bg-color);
@@ -87,6 +98,14 @@ class RecipeCard extends HTMLElement {
     `;
     const elem = document.createElement('div');
     elem.classList.add('recipe-card');
+
+    if (data.completed) {
+      elem.classList.add('completed');
+      const check = document.createElement('div');
+      check.classList.add('checkmark');
+      check.innerHTML = '✔️';
+      elem.appendChild(check);
+    }
 
     const image = document.createElement('img');
     image.classList.add('card-img');
