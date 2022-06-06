@@ -82,10 +82,11 @@ class RecipeCard extends HTMLElement {
       .recipe-card {
         background-color: var(--bg-color);
         color: var(--font-color);
+        border: 1px solid #665d5d;
       }
 
       img {
-        opacity: .75;
+        opacity: 1;
         transition: opacity .5s ease-in-out;
       }
     }
