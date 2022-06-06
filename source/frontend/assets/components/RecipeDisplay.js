@@ -482,10 +482,10 @@ class RecipeDisplay extends HTMLElement {
    */
   SubmitReaction() {
     const button = this.shadowRoot.getElementById('submitButton');
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
       const imgPreview = this.shadowRoot.getElementById('imgPreview');
       this.json.reactions = imgPreview.src;
-      database.updateRecipe(this.json);
+      await database.updateRecipe(this.json);
     });
   }
 
@@ -496,10 +496,10 @@ class RecipeDisplay extends HTMLElement {
    */
   bindCompleteButton(data) {
     const btn = this.shadowRoot.getElementById('made-this-button');
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       RecipeDisplay.jSConfetti.addConfetti({ emojis: ['🥵', '🔥', '🌶️'] });
       if (data.completed === false) {
-        database.completeRecipe(data);
+        await database.completeRecipe(data);
         const newBox = document.createElement('completed');
         newBox.innerHTML = 'Completed!';
         newBox.innerHTML += '<br><br>Upload a picture of your reaction!';

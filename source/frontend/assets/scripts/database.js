@@ -88,28 +88,20 @@ function saveChallenges(challengeJSON) {
  * @returns {Promise<unknown>}
  */
 async function completeRecipe(recipeJSON) {
-  return new Promise((resolve, reject) => {
-    // TODO: get it from the backend
-    const challengeJSON = JSON.parse(localStorage.getItem('challenges'));
-
-    // KEEP
-    for (let i = 0; i < recipeJSON.challenges.length; i += 1) {
-      for (let j = 0; j < challengeJSON.challenges.length; j += 1) {
-        if (challengeJSON.challenges[j].title === recipeJSON.challenges[i]) {
-          challengeJSON.challenges[j].numberCompleted += 1;
-          break;
-        }
-      }
+  try {
+    const response = await fetch(`${url}/completedRecipes/${recipeJSON.recipeId}`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.msg === 'Successfully added recipe to completed list') {
+      return true;
     }
-
-    // KEEP below
-    recipeJSON.completed = true;
-    updateRecipe(recipeJSON)
-      .then(() => {
-        saveChallenges(challengeJSON);
-        resolve(true);
-      });
-  });
+    return false;
+  } catch (err){
+    throw new Error(err);
+  }
 }
 
 /**
