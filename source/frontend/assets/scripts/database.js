@@ -35,7 +35,6 @@ async function loadChallengesFromServer() {
     const result = {
       challenges: data.challengesWithRecipes,
     };
-    console.log(result);
     return result;
   } catch (err) {
     return err;
