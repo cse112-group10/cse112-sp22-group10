@@ -69,89 +69,6 @@
   <main>
     <div>
       <section class="section--main-page shown">
-        <div class="modal fade" id="signup-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="signupModalLabel">Signup</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <form id="signupForm">
-                  <!-- Email input -->
-                  <div class="form-outline mb-4">
-                    <label class="form-label" for="login-username">Username</label>
-                    <input type="text" id="signup-username" class="form-control" required/>
-                  </div>
-
-                  <div class="form-outline mb-4">
-                    <label class="form-label" for="login-username">Email</label>
-                    <input type="email" id="signup-email" class="form-control" required/>
-                  </div>
-
-                  <!-- Password input -->
-                  <div class="form-outline mb-4">
-                    <label class="form-label" for="login-password">Password</label>
-                    <input type="password" id="signup-password" class="form-control" required/>
-                  </div>
-
-                  <!-- Password input -->
-                  <div class="form-outline mb-4">
-                    <label class="form-label" for="login-password">Repeat your password</label>
-                    <input type="password" id="repeat-password" class="form-control" required/>
-                  </div>
-
-                  <!-- Submit button -->
-                  <button type="submit" class="btn btn-danger btn-block mb-4">Create Account</button>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="close-signup-modal" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Login</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <form id="loginForm">
-                  <!-- Email input -->
-                  <div class="form-outline mb-4">
-                    <label class="form-label" for="login-username">Username</label>
-                    <input type="text" id="login-username" class="form-control" required/>
-                  </div>
-
-                  <!-- Password input -->
-                  <div class="form-outline mb-4">
-                    <label class="form-label" for="login-password">Password</label>
-                    <input type="password" id="login-password" class="form-control" required/>
-                  </div>
-
-                  <!-- Submit button -->
-                  <button type="submit" class="btn btn-danger btn-block mb-4">Sign in</button>
-
-                  <!-- Register buttons -->
-                  <div class="text-center">
-                    <p>Not a member? <a href="#!">Register</a></p>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="close-login-modal" data-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
       <!--This division is for the challenge part which is on the left side of the page-->
         <div id="challenge-cards--wrapper" class="main--div">
           <h1 class="challenge-title">Challenges</h1>
@@ -170,6 +87,91 @@
       <section class="section--recipe-upload">
         <recipe-upload></recipe-upload>
       </section>
+
+      <div class="modal fade" id="signup-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="signupModalLabel">Signup</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="signupForm">
+                <!-- Email input -->
+                <div class="form-outline mb-4">
+                  <label class="form-label" for="login-username">Username</label>
+                  <input type="text" id="signup-username" class="form-control" required/>
+                </div>
+
+                <div class="form-outline mb-4">
+                  <label class="form-label" for="login-username">Email</label>
+                  <input type="email" id="signup-email" class="form-control" required/>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline mb-4">
+                  <label class="form-label" for="login-password">Password</label>
+                  <input type="password" id="signup-password" class="form-control" required/>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline mb-4">
+                  <label class="form-label" for="login-password">Repeat your password</label>
+                  <input type="password" id="repeat-password" class="form-control" required/>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-danger btn-block mb-4">Create Account</button>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" id="close-signup-modal" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Login</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form id="loginForm">
+                <!-- Email input -->
+                <div class="form-outline mb-4">
+                  <label class="form-label" for="login-username">Username</label>
+                  <input type="text" id="login-username" class="form-control" required/>
+                </div>
+
+                <!-- Password input -->
+                <div class="form-outline mb-4">
+                  <label class="form-label" for="login-password">Password</label>
+                  <input type="password" id="login-password" class="form-control" required/>
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-danger btn-block mb-4">Sign in</button>
+
+                <!-- Register buttons -->
+                <div class="text-center">
+                  <p>Not a member? <a href="#!">Register</a></p>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" id="close-login-modal" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>
   </main>
 </body>
