@@ -227,11 +227,12 @@ function setUserToken(token) {
 }
 
 /**
- * TODO: modify to use challenge route. add a GET /user/completedChallenges
+ * Simply call load challenges from server instead of doing a local storage fetch
  * @returns {JSON} The challenge list JSON
  */
-function getChallenges() {
-  return JSON.parse(localStorage.getItem('challenges'));
+async function getChallenges() {
+  const challenges = await loadChallengesFromServer();
+  return challenges.challenges;
 }
 
 database.loadChallenges = loadChallenges;

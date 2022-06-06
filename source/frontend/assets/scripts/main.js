@@ -376,7 +376,7 @@ async function createProgressBars() {
   }
 
   // Update the new challenge information
-  challengeData = database.getChallenges().challenges;
+  challengeData = await database.getChallenges();
   challengeData.forEach((challenge) => {
     const challengeBar = document.createElement('challenge-bar');
     challengeBar.data = challenge;
