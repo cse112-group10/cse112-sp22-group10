@@ -142,14 +142,15 @@ async function getBySpice(spiceLevel) {
 async function getByName(query) {
   if (typeof query !== 'string') {
     return new Error('Query was not a string!');
-  }
-  const queryLower = query.toLowerCase();
-  try {
-    const recipesArray = await fetch(`${url}/recipes/searchByTitle/${queryLower}`);
-    const result = await recipesArray.json();
-    return result;
-  } catch (err) {
-    return new Error(`Could not find recipes that include ${query}`);
+  } else {
+    const queryLower = query.toLowerCase();
+    try {
+      const recipesArray = await fetch(`${url}/recipes/searchByTitle/${queryLower}`);
+      const result = await recipesArray.json();
+      return result;
+    } catch (err) {
+      return new Error ('Could not find recipes that include ' + query);
+    }
   }
 }
 
