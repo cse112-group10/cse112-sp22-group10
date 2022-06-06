@@ -35,6 +35,7 @@ async function loadChallengesFromServer() {
     const result = {
       challenges: data.challengesWithRecipes,
     };
+    console.log(result);
     return result;
   } catch (err) {
     return err;
@@ -89,10 +90,10 @@ function saveChallenges(challengeJSON) {
  */
 async function completeRecipe(recipeJSON) {
   try {
-    const response = await fetch(`${url}/completedRecipes/${recipeJSON.recipeId}`, {
+    const response = await fetch(`${url}/users/completedRecipes/${recipeJSON.recipeId}`, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       headers: {
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
       },
     });
     if (response.msg === 'Successfully added recipe to completed list') {
@@ -117,7 +118,11 @@ async function getBySpice(spiceLevel) {
     } if (spiceLevel < 1 || spiceLevel > 5) {
       return new Error('Spice level out of range!');
     }
-    const response = await fetch(`${url}/recipes/spiceRating/${spiceLevel}`);
+    const response = await fetch(`${url}/recipes/spiceRating/${spiceLevel}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+      },
+    });
     const recipe = await response.json();
     return recipe;
   } catch (err) {
@@ -230,10 +235,10 @@ database.loadChallenges = loadChallenges;
 database.addRecipe = addRecipe;
 database.updateRecipe = updateRecipe;
 database.deleteRecipe = deleteRecipe;
-database.completeRecipe = completeRecipe;
 database.getBySpice = getBySpice;
 database.getByName = getByName;
 database.getById = getById;
+database.completeRecipe = completeRecipe;
 database.getChallenges = getChallenges;
 database.login = login;
 database.signup = signup;

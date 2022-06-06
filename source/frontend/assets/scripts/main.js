@@ -467,8 +467,11 @@ async function onSignupFormSubmit() {
  * attach all logged in components: like the login icon, etc.
  */
 function attachLoggedInComponents() {
-  if (localStorage.getItem('userToken') !== undefined) {
+  if (localStorage.getItem('userToken') !== null) {
     document.getElementById('login-icon').hidden = false;
     document.getElementById('login-button').hidden = true;
+  } else {
+    document.getElementById('login-icon').hidden = true;
+    document.getElementById('login-button').hidden = false;
   }
 }
