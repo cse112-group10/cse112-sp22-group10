@@ -142,15 +142,14 @@ async function getBySpice(spiceLevel) {
 async function getByName(query) {
   if (typeof query !== 'string') {
     return new Error('Query was not a string!');
-  } else {
-    const queryLower = query.toLowerCase();
-    try {
-      const recipesArray = await fetch(`${url}/recipes/searchByTitle/${queryLower}`);
-      const result = await recipesArray.json();
-      return result;
-    } catch (err) {
-      return new Error ('Could not find recipes that include ' + query);
-    }
+  }
+  const queryLower = query.toLowerCase();
+  try {
+    const recipesArray = await fetch(`${url}/recipes/searchByTitle/${queryLower}`);
+    const result = await recipesArray.json();
+    return result;
+  } catch (err) {
+    return new Error(`Could not find recipes that include ${query}`);
   }
 }
 
@@ -161,16 +160,16 @@ async function getByName(query) {
  *                    rejects if it fails.
  */
 async function getById(id) {
-  return new Promise((resolve, reject) => {
-    // TODO: replace the below with fetch GET /recipeId/:recipeId
-    // db.recipes.get(id)
-    //   .then((data) => {
-    //     resolve(data.recipe_data);
-    //   })
-    //   .catch((error) => {
-    //     reject(error);
-    //   });
-  });
+  try {
+    if (typeof id !== 'number') {
+      return new Error('Query was not a number!');
+    }
+    const response = await fetch(`${url}/recipeId/${id}`);
+    const recipe = await response.json();
+    return recipe;
+  } catch (err) {
+    return new Error('Get recipe by spice level failed');
+  }
 }
 
 /**
