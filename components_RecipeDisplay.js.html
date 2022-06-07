@@ -462,23 +462,26 @@ class RecipeDisplay extends HTMLElement {
     for (let i = 0; i &lt; data.spiceRating; i += 1) {
       this.shadowRoot.querySelector('#recipe-spice-level').innerHTML += '🌶️';
     }
-    const prepTime = calculateTime(data.time[0]);
+    const prepTime = calculateTime(data.prepTime);
     this.shadowRoot.querySelector('#recipe-prep-time > .recipe-info-number').innerHTML = prepTime;
-    const cookTime = calculateTime(data.time[1]);
+    const cookTime = calculateTime(data.cookTime);
     this.shadowRoot.querySelector('#recipe-cook-time > .recipe-info-number').innerHTML = cookTime;
     const { servingSize } = data;
     this.shadowRoot.querySelector('#recipe-serving-size > .recipe-info-number').innerHTML = servingSize;
+
     const { ingredientList } = data;
     ingredientList.forEach((ingredient) => {
       const ingredientString = getIngredient(ingredient);
       const ingredientContainer = createCheckbox(ingredientString);
       this.shadowRoot.querySelector('#recipe-ingredients > .ingredient-list').appendChild(ingredientContainer);
     });
-    const { directions } = data;
+
+    const directions = data.directions.split(/\r?\n/);
     directions.forEach((direction) => {
       const directionContainer = createCheckbox(direction);
       this.shadowRoot.querySelector('#recipe-directions > .recipe-list').appendChild(directionContainer);
     });
+
     const btn = this.shadowRoot.getElementById('made-this-button');
     if (data.completed === true) {
       const newBox = document.createElement('completed');
@@ -500,7 +503,8 @@ class RecipeDisplay extends HTMLElement {
     } else {
       this.bindCompleteButton(data);
     }
-    if (data.challenges.length !== 0) {
+
+    if (data.challenge !== 'No Challenge') {
       this.ShowChallenge(data);
     }
   }
@@ -510,10 +514,10 @@ class RecipeDisplay extends HTMLElement {
    */
   SubmitReaction() {
     const button = this.shadowRoot.getElementById('submitButton');
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
       const imgPreview = this.shadowRoot.getElementById('imgPreview');
       this.json.reactions = imgPreview.src;
-      database.updateRecipe(this.json);
+      await database.updateRecipe(this.json);
     });
   }
 
@@ -524,25 +528,23 @@ class RecipeDisplay extends HTMLElement {
    */
   bindCompleteButton(data) {
     const btn = this.shadowRoot.getElementById('made-this-button');
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       RecipeDisplay.jSConfetti.addConfetti({ emojis: ['🥵', '🔥', '🌶️'] });
-      if (data.completed === false) {
-        database.completeRecipe(data);
-        const newBox = document.createElement('completed');
-        newBox.innerHTML = 'Completed!';
-        newBox.innerHTML += '&lt;br>&lt;br>Upload a picture of your reaction!';
-        btn.parentElement.appendChild(newBox);
-        btn.parentElement.removeChild(btn);
-        const imgPreview = this.shadowRoot.getElementById('imgPreview');
-        imgPreview.style.display = '';
-        const uploadImg = this.shadowRoot.getElementById('imgUpload');
-        uploadImg.style.display = '';
-        const submitBtn = this.shadowRoot.getElementById('submitButton');
-        submitBtn.style.display = '';
-        this.GetImgurImage();
-        this.json.reactions = 'assets/images/placeholder.png';
-        this.SubmitReaction();
-      }
+      await database.completeRecipe(data);
+      const newBox = document.createElement('completed');
+      newBox.innerHTML = 'Completed!';
+      newBox.innerHTML += '&lt;br>&lt;br>Upload a picture of your reaction!';
+      btn.parentElement.appendChild(newBox);
+      btn.parentElement.removeChild(btn);
+      const imgPreview = this.shadowRoot.getElementById('imgPreview');
+      imgPreview.style.display = '';
+      const uploadImg = this.shadowRoot.getElementById('imgUpload');
+      uploadImg.style.display = '';
+      const submitBtn = this.shadowRoot.getElementById('submitButton');
+      submitBtn.style.display = '';
+      this.GetImgurImage();
+      this.json.reactions = 'assets/images/placeholder.png';
+      this.SubmitReaction();
     });
   }
 
@@ -555,11 +557,11 @@ class RecipeDisplay extends HTMLElement {
     const challengeHeader = document.createElement('ol');
     challengeHeader.classList.add('challenge-header');
     challengeHeader.innerHTML = '&lt;br>&lt;br>Included in Challenges';
-    data.challenges.forEach((childChallenge) => {
-      const li = document.createElement('li');
-      li.innerHTML = childChallenge;
-      challengeHeader.append(li);
-    });
+    // data.challenges.forEach((childChallenge) => {
+    const li = document.createElement('li');
+    li.innerHTML = data.challenge;
+    challengeHeader.append(li);
+    // });
     dummyChild.parentElement.appendChild(challengeHeader);
   }
 }
@@ -569,7 +571,12 @@ class RecipeDisplay extends HTMLElement {
  * @param {*} time
  * @returns string to display time
  */
-function calculateTime(time) {
+function calculateTime(minutes) {
+  const time = {
+    hours: Math.floor(minutes / 60),
+    minutes: minutes % 60,
+  };
+
   let timeString = '';
   if (time.hours > 0) {
     timeString += `${time.hours} hours`;
@@ -628,13 +635,13 @@ customElements.define('recipe-display', RecipeDisplay);
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallenges">loadChallenges</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#saveChallenges">saveChallenges</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#attachLoggedInComponents">attachLoggedInComponents</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallenges">loadChallenges</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#onLoginFormSubmit">onLoginFormSubmit</a></li><li><a href="global.html#onSignupFormSubmit">onSignupFormSubmit</a></li><li><a href="global.html#saveChallenges">saveChallenges</a></li><li><a href="global.html#setUserToken">setUserToken</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Mon Jun 06 2022 06:50:57 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Jun 07 2022 00:26:30 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

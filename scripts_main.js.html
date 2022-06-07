@@ -70,6 +70,9 @@ async function init() {
   clickLogoToGoHome();
   sliderSpiceLevel();
   createProgressBars();
+  onLoginFormSubmit();
+  onSignupFormSubmit();
+  attachLoggedInComponents();
 }
 
 /**
@@ -401,7 +404,7 @@ async function createProgressBars() {
   }
 
   // Update the new challenge information
-  challengeData = database.getChallenges().challenges;
+  challengeData = await database.getChallenges();
   challengeData.forEach((challenge) => {
     const challengeBar = document.createElement('challenge-bar');
     challengeBar.data = challenge;
@@ -429,6 +432,77 @@ async function bindProgressBar(challengeBar, challenge) {
     createRecipeCards(challenge.recipeObjects);
   });
 }
+
+/**
+ * when the login form is submitted
+ * @returns {Promise&lt;void>}
+ */
+async function onLoginFormSubmit() {
+  const loginForm = document.getElementById('loginForm');
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const user = {
+      username: document.getElementById('login-username').value,
+      password: document.getElementById('login-password').value,
+    };
+    const data = await database.login(user);
+    if (!data.accessToken) {
+      alert(data.message);
+      return;
+    }
+    document.getElementById('close-login-modal').click();
+    init();
+  });
+}
+
+/**
+ * when the signup form is submitted
+ * @returns {Promise&lt;void>}
+ */
+async function onSignupFormSubmit() {
+  const signupForm = document.getElementById('signupForm');
+  signupForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    if (document.getElementById('signup-password').value
+    !== document.getElementById('repeat-password').value) {
+      alert('Password needs to match! 😤');
+      return;
+    }
+
+    const user = {
+      username: document.getElementById('signup-username').value,
+      password: document.getElementById('signup-password').value,
+      email: document.getElementById('signup-email').value,
+    };
+    const data = await database.signup(user);
+    if (!data.newUser) {
+      alert(data.msg);
+      return;
+    }
+    alert('Signup successful! Welcome to exploding kitchen! 💣💥🧑‍🍳');
+    const loginData = await database.login(user);
+    if (!loginData.accessToken) {
+      alert(data.message);
+      return;
+    }
+    document.getElementById('close-signup-modal').click();
+    init();
+  });
+}
+
+/**
+ * attach all logged in components: like the login icon, etc.
+ */
+function attachLoggedInComponents() {
+  if (localStorage.getItem('userToken') !== null) {
+    document.getElementById('login-icon').hidden = false;
+    document.getElementById('login-button').hidden = true;
+  } else {
+    document.getElementById('login-icon').hidden = true;
+    document.getElementById('login-button').hidden = false;
+  }
+}
 </code></pre>
         </article>
     </section>
@@ -439,13 +513,13 @@ async function bindProgressBar(challengeBar, challenge) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallenges">loadChallenges</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#saveChallenges">saveChallenges</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#attachLoggedInComponents">attachLoggedInComponents</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallenges">loadChallenges</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#onLoginFormSubmit">onLoginFormSubmit</a></li><li><a href="global.html#onSignupFormSubmit">onSignupFormSubmit</a></li><li><a href="global.html#saveChallenges">saveChallenges</a></li><li><a href="global.html#setUserToken">setUserToken</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Mon Jun 06 2022 06:50:57 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Jun 07 2022 00:26:30 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
