@@ -367,6 +367,9 @@ async function displaySearchCards() {
  * Populates the challenge progress section
  */
 async function createProgressBars() {
+  // Get challenges
+  challengeData = await database.getChallenges();
+
   // Clear the challenge bars to be updated
   const challengeBody = document.querySelector('.challenge-body');
   const challengeBars = challengeBody.getElementsByTagName('challenge-bar');
@@ -375,7 +378,6 @@ async function createProgressBars() {
   }
 
   // Update the new challenge information
-  challengeData = await database.getChallenges();
   challengeData.forEach((challenge) => {
     const challengeBar = document.createElement('challenge-bar');
     challengeBar.data = challenge;

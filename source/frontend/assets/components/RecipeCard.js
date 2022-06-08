@@ -67,14 +67,25 @@ class RecipeCard extends HTMLElement {
       padding: 0 0.6rem 0 1rem;
     }
 
+    .completed {
+      opacity: 0.66;
+      background-color: #dde3ed;
+    }
+
+    .checkmark {
+      position: absolute;
+      font-size: 75px;
+    }
+
     @media (prefers-color-scheme: dark) {
       .recipe-card {
         background-color: var(--bg-color);
         color: var(--font-color);
+        border: 1px solid #665d5d;
       }
 
       img {
-        opacity: .75;
+        opacity: 1;
         transition: opacity .5s ease-in-out;
       }
     }
@@ -87,6 +98,14 @@ class RecipeCard extends HTMLElement {
     `;
     const elem = document.createElement('div');
     elem.classList.add('recipe-card');
+
+    if (data.completed) {
+      elem.classList.add('completed');
+      const check = document.createElement('div');
+      check.classList.add('checkmark');
+      check.innerHTML = '✔️';
+      elem.appendChild(check);
+    }
 
     const image = document.createElement('img');
     image.classList.add('card-img');
@@ -112,7 +131,11 @@ class RecipeCard extends HTMLElement {
 
     const time = document.createElement('time');
 
-    time.innerHTML = `${Math.floor(data.totalTime / 60)} hrs ${data.totalTime % 60} min`;
+    if (data.totalTime >= 60) {
+      time.innerHTML = `${Math.floor(data.totalTime / 60)} hrs ${data.totalTime % 60} min`;
+    } else {
+      time.innerHTML = `${data.totalTime} min`;
+    }
 
     const servings = document.createElement('span');
     servings.innerText = `Serving(s): ${data.servingSize}`;
