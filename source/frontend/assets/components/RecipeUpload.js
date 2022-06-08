@@ -423,15 +423,13 @@ class RecipeUpload extends HTMLElement {
     this.shadowRoot.getElementById('header-upload-photo').innerText = 'Upload New Photo';
     this.shadowRoot.getElementById('p-upload-photo').innerText = 'Upload a new picture if you wish to edit the dish image!';
 
-    if (data.challenges.length === 0) {
-      const deleteButton = document.createElement('input');
-      deleteButton.setAttribute('id', 'deleteButton');
-      deleteButton.classList.add('Delete');
-      deleteButton.setAttribute('type', 'button');
-      deleteButton.setAttribute('value', 'Delete');
-      this.shadowRoot.getElementById('formButtons').appendChild(deleteButton);
-      this.BindDeleteButton();
-    }
+    const deleteButton = document.createElement('input');
+    deleteButton.setAttribute('id', 'deleteButton');
+    deleteButton.classList.add('Delete');
+    deleteButton.setAttribute('type', 'button');
+    deleteButton.setAttribute('value', 'Delete');
+    this.shadowRoot.getElementById('formButtons').appendChild(deleteButton);
+    this.BindDeleteButton();
     this.FillExistingData();
   }
 
@@ -456,32 +454,18 @@ class RecipeUpload extends HTMLElement {
 
       const jsonText = {
         title: recipeName,
-        id: 'ID',
         description,
         image: url,
         servingSize,
         scoville,
-        time: [
-          {
-            name: 'prepTime',
-            hours: prepHrs,
-            minutes: prepMins,
-          },
-          {
-            name: 'cookTime',
-            hours: cookHrs,
-            minutes: cookMins,
-          },
-          {
-            name: 'totalTime',
-            hours: totalTimeArr[0],
-            minutes: totalTimeArr[1],
-          },
-        ],
+        prepTime: prepHrs * 60 + prepMins,
+        cookTime: cookHrs * 60 + cookMins,
+        totalTime: totalTimeArr[0] * 60 + totalTimeArr[1],
         ingredientList: [],
         directions: [],
-        challenges: [],
-        completed: false,
+        // hard code it to no challenges for now as in the future user should be able to select a
+        // challenge this recipe is in.
+        challenge: 'No Challenge',
       };
 
       const divIngredients = this.shadowRoot.getElementById('ingredients');
@@ -530,10 +514,12 @@ class RecipeUpload extends HTMLElement {
         jsonText.spiceRating = 5;
       }
 
+      jsonText.directions = jsonText.directions.join('\n');
+
       if (this.isCreate) {
         database.addRecipe(jsonText);
       } else {
-        jsonText.id = this.json.id;
+        jsonText.recipeId = this.json.recipeId;
         database.updateRecipe(jsonText);
       }
     });
@@ -791,10 +777,10 @@ class RecipeUpload extends HTMLElement {
     }
     this.shadowRoot.getElementById('servingSize').value = this.json.servingSize;
     this.shadowRoot.getElementById('scoville').value = this.json.scoville;
-    this.shadowRoot.getElementById('prepMins').value = this.json.time[0].minutes;
-    this.shadowRoot.getElementById('prepHrs').value = this.json.time[0].hours;
-    this.shadowRoot.getElementById('cookMins').value = this.json.time[1].minutes;
-    this.shadowRoot.getElementById('cookHrs').value = this.json.time[1].hours;
+    this.shadowRoot.getElementById('prepMins').value = this.json.prepTime % 60;
+    this.shadowRoot.getElementById('prepHrs').value = Math.floor(this.json.prepTime / 60);
+    this.shadowRoot.getElementById('cookMins').value = this.json.cookTime % 60;
+    this.shadowRoot.getElementById('cookHrs').value = Math.floor(this.json.cookTime / 60);
 
     for (let i = 1; i < (this.json.ingredientList.length); i += 1) {
       this.MakeExtraIngredientsSlots(this.json.ingredientList[i]);

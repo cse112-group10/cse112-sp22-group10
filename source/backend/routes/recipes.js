@@ -46,14 +46,17 @@ router.put('/:recipeId', verifyUserToken, async (req, res) => {
 
     const update = req.body;
     const updatedRecipe = req.body.recipe;
-    const updatedIngredients = req.body.ingredients;
+    delete updatedRecipe.completed;
+
+    const updatedIngredients = updatedRecipe.ingredientList;
+    delete updatedRecipe.ingredientList;
     await recipesModel.updateRecipe(updatedRecipe, updatedIngredients, recipeId);
 
     return res.status(200).json({ update, msg: 'Successfully edited a recipe' });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: 'Failed to edit recipe',
+      msg: 'Failed to edit recipe',
       err,
     });
   }
@@ -178,12 +181,16 @@ router.post('/', verifyUserToken, async (req, res) => {
     // save the req.body.ingredients into another variable : ingredients
     const { userId } = req.userInfo;
     newRecipe.userId = userId;
-    await recipesModel.createRecipe(newRecipe, req.body.ingredients);
+
+    const ingredients = newRecipe.ingredientList;
+    delete newRecipe.ingredientList;
+
+    await recipesModel.createRecipe(newRecipe, ingredients);
     return res.status(200).json({ newRecipe, msg: 'Successfully created a new recipe' });
   } catch (err) {
     console.error(err);
     return res.status(500)
-      .json({ err, data: 'Unable to add recipe' });
+      .json({ err, msg: 'Unable to add recipe' });
   }
 });
 
@@ -215,6 +222,15 @@ router.get('/searchByTitle/:title', async (req, res) => {
     const title = '%'.concat(inputTitle, '%');
 
     const recipes = await recipesModel.getByTitle(title);
+    const recipeIngredients = await recipeIngredientsModel.getAllRecipeIngredients();
+    let completedRecipes = [];
+    if (req.userInfo) {
+      completedRecipes = await completedRecipesModel.getCompletedRecipes(req.userInfo.userId);
+    }
+    await Promise.all(await recipes.map((recipe) => {
+      recipe.ingredientList = recipeIngredients.filter((recipeIngredient) => recipeIngredient.recipeId === recipe.recipeId);
+      recipe.completed = completedRecipes.findIndex((completed) => completed.recipeId === recipe.recipeId) !== -1;
+    }));
     return res.status(200).json(recipes);
   } catch (err) {
     console.error(err);
