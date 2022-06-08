@@ -35,19 +35,7 @@ const serverUrlProd = 'http://exploding-kitchen.us-west-1.elasticbeanstalk.com/a
 const url = (serverEnv === 'production') ? serverUrlProd : serverUrlLocal;
 
 /**
- * load challenges
- * @returns {Promise&lt;void>}
- */
-async function loadChallenges() {
-  await loadChallengesFromServer()
-    .then((challenges) => {
-      saveChallenges(challenges);
-    });
-}
-
-/**
- * TODO: change the following to match the challenges.json (will need a new route).
- * Fetches the challenge list from file.
+ * Fetches the challenge list from server.
  * @returns {Promise} Resolves with the challenge list json if successful, rejects otherwise.
  */
 async function loadChallengesFromServer() {
@@ -77,7 +65,6 @@ async function loadChallengesFromServer() {
  * @returns {Promise} Resolves true if the recipe was successfully added, rejects otherwise.
  */
 async function addRecipe(recipeJSON) {
-  // TODO: fetch POST /recipe with recipeJSON as the body. https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L104
   try {
     const response = await fetch(`${url}/recipes/`, {
       method: 'POST',
@@ -88,7 +75,10 @@ async function addRecipe(recipeJSON) {
       body: JSON.stringify({ recipe: recipeJSON }),
     });
     const result = await response.json();
-    console.log(result);
+    if (result.msg !== 'Successfully created a new recipe') {
+      alert(result.msg);
+      return false;
+    }
     return true;
   } catch (err) {
     throw new Error(err);
@@ -102,7 +92,24 @@ async function addRecipe(recipeJSON) {
  * @returns {Promise} Resolves true if the recipe was successfully updated, rejects otherwise.
  */
 async function updateRecipe(recipeJSON) {
-  // TODO: fetch PUT /recipe/:recipeId, with the authorization header + recipeId param. https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L32
+  try {
+    const response = await fetch(`${url}/recipes/${recipeJSON.recipeId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ recipe: recipeJSON }),
+    });
+    const data = await response.json();
+    if (data.msg !== 'Successfully edited a recipe') {
+      alert(data.msg);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 /**
@@ -112,21 +119,26 @@ async function updateRecipe(recipeJSON) {
  * @returns {Promise} Resolves true if the recipe was successfully deleted, rejects otherwise.
  */
 async function deleteRecipe(recipeJSON) {
-  // TODO: fetch DELETE /recipe/:recipeId: https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L119
+  try {
+    const response = await fetch(`${url}/recipes/${recipeJSON.recipeId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+      },
+    });
+    const result = await response.json();
+    if (result.msg !== 'Delete successful') {
+      alert(result.msg);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 /**
- * TODO: refactor this function to save challenge in the backend instead of localstorage
- *
- * Saves the challenge JSON into local storage
- * @param {JSON} challengeJSON The JSON to save
- */
-function saveChallenges(challengeJSON) {
-  const challengeString = JSON.stringify(challengeJSON);
-  localStorage.setItem('challenges', challengeString);
-}
-/**
- * TODO: lots of refactoring of this function
+ * Update the server for completing a recipe
  * @param recipeJSON
  * @returns {Promise&lt;unknown>}
  */
@@ -173,7 +185,7 @@ async function getBySpice(spiceLevel) {
 }
 
 /**
- * TODO: need a route for this as well. GET /recipes/:title
+ * Get recipes by title.
  * @param {String} queryName The recipe name query.
  * @returns {Promise} Resolves with an array of recipe JSONs whose name contains the query,
  *                    rejects if it fails.
@@ -250,6 +262,9 @@ async function signup(userPayload) {
       body: JSON.stringify(userPayload), // body data type must match "Content-Type" header
     });
     const data = await response.json();
+    if (data.accessToken) {
+      setUserToken(data.accessToken);
+    }
     return data;
   } catch (err) {
     return new Error('Password or username incorrect, please try again');
@@ -273,7 +288,6 @@ async function getChallenges() {
   return challenges.challenges;
 }
 
-database.loadChallenges = loadChallenges;
 database.addRecipe = addRecipe;
 database.updateRecipe = updateRecipe;
 database.deleteRecipe = deleteRecipe;
@@ -294,13 +308,13 @@ database.signup = signup;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#attachLoggedInComponents">attachLoggedInComponents</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallenges">loadChallenges</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#onLoginFormSubmit">onLoginFormSubmit</a></li><li><a href="global.html#onSignupFormSubmit">onSignupFormSubmit</a></li><li><a href="global.html#saveChallenges">saveChallenges</a></li><li><a href="global.html#setUserToken">setUserToken</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#attachLoggedInComponents">attachLoggedInComponents</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#onLoginFormSubmit">onLoginFormSubmit</a></li><li><a href="global.html#onSignupFormSubmit">onSignupFormSubmit</a></li><li><a href="global.html#setUserToken">setUserToken</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Wed Jun 08 2022 06:48:35 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Wed Jun 08 2022 17:29:07 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
