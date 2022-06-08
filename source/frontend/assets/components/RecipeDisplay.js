@@ -438,13 +438,19 @@ class RecipeDisplay extends HTMLElement {
     const btn = this.shadowRoot.getElementById('made-this-button');
     btn.addEventListener('click', async () => {
       RecipeDisplay.jSConfetti.addConfetti({ emojis: ['🥵', '🔥', '🌶️'] });
-      const isLoggedIn = await database.completeRecipe(data);
-      if (!isLoggedIn) {
+      const completeResponse = await database.completeRecipe(data);
+      if (completeResponse === 'No user') {
         document.getElementById('login-button').click();
       } else {
         const newBox = document.createElement('completed');
         newBox.classList.add('recipe-title');
-        newBox.innerHTML = '🎉 Completed! 🎉';
+        if (completeResponse === 'Conflict') {
+          newBox.innerHTML = 'Recipe is already completed.';
+        } else if (completeResponse === 'Error') {
+          newBox.innerHTML = 'Error when completing recipe.';
+        } else {
+          newBox.innerHTML = '🎉 Completed! 🎉';
+        }
         btn.parentElement.appendChild(newBox);
         btn.parentElement.removeChild(btn);
       }
