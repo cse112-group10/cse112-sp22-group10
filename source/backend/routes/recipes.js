@@ -178,7 +178,15 @@ router.post('/', verifyUserToken, async (req, res) => {
     // save the req.body.ingredients into another variable : ingredients
     const { userId } = req.userInfo;
     newRecipe.userId = userId;
-    await recipesModel.createRecipe(newRecipe, req.body.ingredients);
+    // hard code it to no challenges for now as in the future user should be able to select a
+    // challenge this recipe is in.
+    newRecipe.challenge = 'No Challenge';
+    delete newRecipe.challenges;
+
+    const ingredients = newRecipe.ingredientList;
+    delete newRecipe.ingredientList;
+
+    await recipesModel.createRecipe(newRecipe, ingredients);
     return res.status(200).json({ newRecipe, msg: 'Successfully created a new recipe' });
   } catch (err) {
     console.error(err);

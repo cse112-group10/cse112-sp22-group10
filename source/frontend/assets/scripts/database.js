@@ -1,7 +1,7 @@
 // database.js
 export const database = {};
 
-const serverEnv = 'production';
+const serverEnv = 'local';
 const serverUrlLocal = 'http://localhost:3000';
 const serverUrlProd = 'http://exploding-kitchen.us-west-1.elasticbeanstalk.com/api';
 const url = (serverEnv === 'production') ? serverUrlProd : serverUrlLocal;
@@ -51,22 +51,20 @@ async function loadChallengesFromServer() {
 async function addRecipe(recipeJSON) {
   // TODO: fetch POST /recipe with recipeJSON as the body. https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L104
   try {
-    const recipesArray = await fetch(`${url}/recipes/searchByTitle/${queryLower}`);
-    const result = await recipesArray.json();
-     if (result == recipeJSON.recipeId) { //Checks if recipe of same name already exists
-       const response = await fetch(`${url}/users/recipe/${recipeJSON.recipeId}`, {
-         method: 'POST',
-         headers: {
-           Authorization: `Bearer ${localStorage.getItem('userToken')}`,
-         },
-         body: recipeJSON,
-       });
-       return true;
-     }
-     return false;
-   } catch (err){
-     throw new Error(err);
-   }
+    const response = await fetch(`${url}/recipes/`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ recipe: recipeJSON }),
+    });
+    const result = await response.json();
+    console.log(result);
+    return true;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 /**
@@ -116,7 +114,7 @@ async function completeRecipe(recipeJSON) {
       return true;
     }
     return false;
-  } catch (err){
+  } catch (err) {
     throw new Error(err);
   }
 }
