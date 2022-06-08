@@ -357,7 +357,7 @@ async function displaySearchCards() {
         if (recipeList.length > 0) {
           createRecipeCards(recipeList);
         } else {
-          document.getElementById('middle-title').innerHTML = 'No results found!';
+          document.getElementById('middle-title').innerHTML = `No results found for ${searchString}!`;
         }
       } catch (err) {
         console.log(`Error fetching recipes: ${err}`);
