@@ -1,25 +1,13 @@
 // database.js
 export const database = {};
 
-const serverEnv = 'production';
+const serverEnv = 'local';
 const serverUrlLocal = 'http://localhost:3000';
 const serverUrlProd = 'http://exploding-kitchen.us-west-1.elasticbeanstalk.com/api';
 const url = (serverEnv === 'production') ? serverUrlProd : serverUrlLocal;
 
 /**
- * load challenges
- * @returns {Promise<void>}
- */
-async function loadChallenges() {
-  await loadChallengesFromServer()
-    .then((challenges) => {
-      saveChallenges(challenges);
-    });
-}
-
-/**
- * TODO: change the following to match the challenges.json (will need a new route).
- * Fetches the challenge list from file.
+ * Fetches the challenge list from server.
  * @returns {Promise} Resolves with the challenge list json if successful, rejects otherwise.
  */
 async function loadChallengesFromServer() {
@@ -49,7 +37,6 @@ async function loadChallengesFromServer() {
  * @returns {Promise} Resolves true if the recipe was successfully added, rejects otherwise.
  */
 async function addRecipe(recipeJSON) {
-  // TODO: fetch POST /recipe with recipeJSON as the body. https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L104
   try {
     const response = await fetch(`${url}/recipes/`, {
       method: 'POST',
@@ -60,7 +47,10 @@ async function addRecipe(recipeJSON) {
       body: JSON.stringify({ recipe: recipeJSON }),
     });
     const result = await response.json();
-    console.log(result);
+    if (result.msg !== 'Successfully created a new recipe') {
+      alert(result.msg);
+      return false;
+    }
     return true;
   } catch (err) {
     throw new Error(err);
@@ -74,7 +64,24 @@ async function addRecipe(recipeJSON) {
  * @returns {Promise} Resolves true if the recipe was successfully updated, rejects otherwise.
  */
 async function updateRecipe(recipeJSON) {
-  // TODO: fetch PUT /recipe/:recipeId, with the authorization header + recipeId param. https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L32
+  try {
+    const response = await fetch(`${url}/recipes/${recipeJSON.recipeId}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ recipe: recipeJSON }),
+    });
+    const data = await response.json();
+    if (data.msg !== 'Successfully edited a recipe') {
+      alert(data.msg);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 /**
@@ -84,21 +91,26 @@ async function updateRecipe(recipeJSON) {
  * @returns {Promise} Resolves true if the recipe was successfully deleted, rejects otherwise.
  */
 async function deleteRecipe(recipeJSON) {
-  // TODO: fetch DELETE /recipe/:recipeId: https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L119
+  try {
+    const response = await fetch(`${url}/recipes/${recipeJSON.recipeId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+      },
+    });
+    const result = await response.json();
+    if (result.msg !== 'Delete successful') {
+      alert(result.msg);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 /**
- * TODO: refactor this function to save challenge in the backend instead of localstorage
- *
- * Saves the challenge JSON into local storage
- * @param {JSON} challengeJSON The JSON to save
- */
-function saveChallenges(challengeJSON) {
-  const challengeString = JSON.stringify(challengeJSON);
-  localStorage.setItem('challenges', challengeString);
-}
-/**
- * TODO: lots of refactoring of this function
+ * Update the server for completing a recipe
  * @param recipeJSON
  * @returns {Promise<unknown>}
  */
@@ -145,7 +157,7 @@ async function getBySpice(spiceLevel) {
 }
 
 /**
- * TODO: need a route for this as well. GET /recipes/:title
+ * Get recipes by title.
  * @param {String} queryName The recipe name query.
  * @returns {Promise} Resolves with an array of recipe JSONs whose name contains the query,
  *                    rejects if it fails.
@@ -240,11 +252,7 @@ function setUserToken(token) {
 }
 
 /**
-<<<<<<< HEAD
- * TODO: modify to use challenge route. add a GET /user/completedChallenges
-=======
  * Simply call load challenges from server instead of doing a local storage fetch
->>>>>>> a65515e532cd8ab334558ace6ed245f1a138fd52
  * @returns {JSON} The challenge list JSON
  */
 async function getChallenges() {
@@ -252,7 +260,6 @@ async function getChallenges() {
   return challenges.challenges;
 }
 
-database.loadChallenges = loadChallenges;
 database.addRecipe = addRecipe;
 database.updateRecipe = updateRecipe;
 database.deleteRecipe = deleteRecipe;
