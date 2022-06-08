@@ -405,11 +405,7 @@ async function bindProgressBar(challengeBar, challenge) {
 }
 
 /**
-<<<<<<< HEAD
- * when the login form is submitteed
-=======
  * when the login form is submitted
->>>>>>> a65515e532cd8ab334558ace6ed245f1a138fd52
  * @returns {Promise<void>}
  */
 async function onLoginFormSubmit() {
