@@ -32,6 +32,7 @@
   <script src='assets/components/RecipeDisplay.js' type="module"></script>
   <script src='assets/components/RecipeUpload.js' type="module"></script>
   <script src='assets/components/ChallengeBar.js' type="module"></script>
+  <script src='assets/components/UserPage.js' type="module"></script>
 
   <!-- Confetti -->
   <script src="assets/scripts/js-confetti.browser.js"></script>
@@ -68,7 +69,9 @@
     <!--This div is for the create recipe button-->
     <div class="button--wrapper">
       <button id="create-button">Create Recipe</button>
+      <button id="user-button">User</button>
     </div>
+    
   </header>
   <main>
     <div>
@@ -90,6 +93,9 @@
       </section>
       <section class="section--recipe-upload">
         <recipe-upload></recipe-upload>
+      </section>
+      <section class="section--user-page">
+        <user-page></user-page>
       </section>
     </div>
   </main>
