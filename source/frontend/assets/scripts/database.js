@@ -116,16 +116,22 @@ async function deleteRecipe(recipeJSON) {
  */
 async function completeRecipe(recipeJSON) {
   try {
+    if (localStorage.getItem('userToken') === null) {
+      return 'No user';
+    }
     const response = await fetch(`${url}/users/completedRecipes/${recipeJSON.recipeId}`, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       headers: {
         Authorization: `Bearer ${localStorage.getItem('userToken')}`,
       },
     });
-    if (response.msg === 'Successfully added recipe to completed list') {
-      return true;
+    if (response.status === 503) {
+      return 'Error';
     }
-    return false;
+    if (response.status === 409) {
+      return 'Conflict';
+    }
+    return 'Success';
   } catch (err) {
     throw new Error(err);
   }

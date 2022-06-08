@@ -502,21 +502,22 @@ class RecipeDisplay extends HTMLElement {
     const btn = this.shadowRoot.getElementById('made-this-button');
     btn.addEventListener('click', async () => {
       RecipeDisplay.jSConfetti.addConfetti({ emojis: ['🥵', '🔥', '🌶️'] });
-      await database.completeRecipe(data);
-      const newBox = document.createElement('completed');
-      newBox.innerHTML = 'Completed!';
-      newBox.innerHTML += '<br><br>Upload a picture of your reaction!';
-      btn.parentElement.appendChild(newBox);
-      btn.parentElement.removeChild(btn);
-      const imgPreview = this.shadowRoot.getElementById('imgPreview');
-      imgPreview.style.display = '';
-      const uploadImg = this.shadowRoot.getElementById('imgUpload');
-      uploadImg.style.display = '';
-      const submitBtn = this.shadowRoot.getElementById('submitButton');
-      submitBtn.style.display = '';
-      this.GetImgurImage();
-      this.json.reactions = 'assets/images/placeholder.png';
-      this.SubmitReaction();
+      const completeResponse = await database.completeRecipe(data);
+      if (completeResponse === 'No user') {
+        document.getElementById('login-button').click();
+      } else {
+        const newBox = document.createElement('completed');
+        newBox.classList.add('recipe-title');
+        if (completeResponse === 'Conflict') {
+          newBox.innerHTML = 'Recipe is already completed.';
+        } else if (completeResponse === 'Error') {
+          newBox.innerHTML = 'Error when completing recipe.';
+        } else {
+          newBox.innerHTML = '🎉 Completed! 🎉';
+        }
+        btn.parentElement.appendChild(newBox);
+        btn.parentElement.removeChild(btn);
+      }
     });
   }
 
