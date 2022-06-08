@@ -11,7 +11,7 @@ const url = (serverEnv === 'production') ? serverUrlProd : serverUrlLocal;
  * @returns {Promise<void>}
  */
 async function loadChallenges() {
-  await loadChallengesFromFile()
+  await loadChallengesFromServer()
     .then((challenges) => {
       saveChallenges(challenges);
     });
@@ -22,17 +22,23 @@ async function loadChallenges() {
  * Fetches the challenge list from file.
  * @returns {Promise} Resolves with the challenge list json if successful, rejects otherwise.
  */
-async function loadChallengesFromFile() {
-  return new Promise((resolve, reject) => {
-    fetch('assets/jsons/challenges.json')
-      .then((response) => response.json())
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
+async function loadChallengesFromServer() {
+  try {
+    const response = await fetch(`${url}/recipes/challenges`, {
+      method: 'GET',
+      headers: {
+        Authorization: `bearer ${localStorage.getItem('userToken')}`,
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    const data = await response.json();
+    const result = {
+      challenges: data.challengesWithRecipes,
+    };
+    return result;
+  } catch (err) {
+    return err;
+  }
 }
 
 /**
@@ -44,6 +50,21 @@ async function loadChallengesFromFile() {
  */
 async function addRecipe(recipeJSON) {
   // TODO: fetch POST /recipe with recipeJSON as the body. https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L104
+  try {
+    const response = await fetch(`${url}/recipes/`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ recipe: recipeJSON }),
+    });
+    const result = await response.json();
+    console.log(result);
+    return true;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 /**
@@ -82,28 +103,20 @@ function saveChallenges(challengeJSON) {
  * @returns {Promise<unknown>}
  */
 async function completeRecipe(recipeJSON) {
-  return new Promise((resolve, reject) => {
-    // TODO: get it from the backend
-    const challengeJSON = JSON.parse(localStorage.getItem('challenges'));
-
-    // KEEP
-    for (let i = 0; i < recipeJSON.challenges.length; i += 1) {
-      for (let j = 0; j < challengeJSON.challenges.length; j += 1) {
-        if (challengeJSON.challenges[j].title === recipeJSON.challenges[i]) {
-          challengeJSON.challenges[j].numberCompleted += 1;
-          break;
-        }
-      }
+  try {
+    const response = await fetch(`${url}/users/completedRecipes/${recipeJSON.recipeId}`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+      },
+    });
+    if (response.msg === 'Successfully added recipe to completed list') {
+      return true;
     }
-
-    // KEEP below
-    recipeJSON.completed = true;
-    updateRecipe(recipeJSON)
-      .then(() => {
-        saveChallenges(challengeJSON);
-        resolve(true);
-      });
-  });
+    return false;
+  } catch (err) {
+    throw new Error(err);
+  }
 }
 
 /**
@@ -116,43 +129,19 @@ async function getBySpice(spiceLevel) {
   try {
     if (typeof spiceLevel !== 'number') {
       return new Error('Query was not a number!');
-    } else if (spiceLevel < 1 || spiceLevel > 5) {
+    } if (spiceLevel < 1 || spiceLevel > 5) {
       return new Error('Spice level out of range!');
     }
-    const response = await fetch(`${url}/recipes/spiceRating/${spiceLevel}`);
+    const response = await fetch(`${url}/recipes/spiceRating/${spiceLevel}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+      },
+    });
     const recipe = await response.json();
     return recipe;
   } catch (err) {
     return new Error('Get recipe by spice level failed');
   }
-}
-
-/**
- * TODO: make a new route for this function
- * @param {Array} recipeNames A list of recipe name queries.
- * @returns {Promise} Resolves with the number of recipes matching the given names,
- *                    rejects if it fails.
- */
-async function countRecipes(recipeNames) {
-  return new Promise((resolve) => {
-    const numRecipes = 0;
-    const namesProcessed = 0;
-    if (recipeNames.length === 0) {
-      resolve(0);
-      return;
-    }
-    recipeNames.forEach((recipeName) => {
-      // TODO: replace below with fetch call.
-      // db.recipes.where('recipe_name').equals(recipeName).count()
-      //   .then((count) => {
-      //     numRecipes += count;
-      //     namesProcessed += 1;
-      //     if (namesProcessed === recipeNames.length) {
-      //       resolve(numRecipes);
-      //     }
-      //   });
-    });
-  });
 }
 
 /**
@@ -162,43 +151,17 @@ async function countRecipes(recipeNames) {
  *                    rejects if it fails.
  */
 async function getByName(query) {
-  return new Promise((resolve, reject) => {
-    if (typeof query !== 'string') {
-      reject(new Error('Query was not a string!'));
-    } else {
-      const recipesPushed = 0;
-      const recipeNames = [];
-      let filteredNames;
-      const queryLower = query.toLowerCase();
-      // TODO: modify the below stuff
-      // db.recipes.orderBy('recipe_name').eachUniqueKey((name) => {
-      //   recipeNames.push(name);
-      // })
-      //   .then(() => {
-      //     filteredNames = recipeNames.filter((name) => name.toLowerCase().includes(queryLower));
-      //     return countRecipes(filteredNames);
-      //   })
-      //   .then((numRecipes) => {
-      //     const jsonArray = [];
-      //     if (numRecipes === 0) {
-      //       resolve(jsonArray);
-      //       return;
-      //     }
-      //     filteredNames.forEach(async (name) => {
-      //       const collection = db.recipes.where('recipe_name').equals(name);
-      //       collection.each((recipe) => {
-      //         jsonArray.push(recipe.recipe_data);
-      //         recipesPushed += 1;
-      //       })
-      //         .then(() => {
-      //           if (recipesPushed === numRecipes) {
-      //             resolve(jsonArray);
-      //           }
-      //         });
-      //     });
-      //   });
-    }
-  });
+  if (typeof query !== 'string') {
+    return new Error('Query was not a string!');
+  }
+  const queryLower = query.toLowerCase();
+  try {
+    const recipesArray = await fetch(`${url}/recipes/searchByTitle/${queryLower}`);
+    const result = await recipesArray.json();
+    return result;
+  } catch (err) {
+    return new Error(`Could not find recipes that include ${query}`);
+  }
 }
 
 /**
@@ -208,32 +171,88 @@ async function getByName(query) {
  *                    rejects if it fails.
  */
 async function getById(id) {
-  return new Promise((resolve, reject) => {
-    // TODO: replace the below with fetch GET /recipeId/:recipeId
-    // db.recipes.get(id)
-    //   .then((data) => {
-    //     resolve(data.recipe_data);
-    //   })
-    //   .catch((error) => {
-    //     reject(error);
-    //   });
-  });
+  try {
+    if (typeof id !== 'number') {
+      return new Error('Query was not a number!');
+    }
+    const response = await fetch(`${url}/recipeId/${id}`);
+    const recipe = await response.json();
+    return recipe;
+  } catch (err) {
+    return new Error('Get recipe by spice level failed');
+  }
 }
 
 /**
- * TODO: modify to use challenge route. add a GET /user/completedChallenges
+ * fetch the token of the given userPayload
+ * @param userPayload
+ * @returns {Promise<Error>}
+ */
+async function login(userPayload) {
+  try {
+    const response = await fetch(`${url}/auth/login/`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userPayload), // body data type must match "Content-Type" header
+    });
+    const data = await response.json();
+    if (data.accessToken) {
+      setUserToken(data.accessToken);
+    }
+    return data;
+  } catch (err) {
+    return new Error('Password or username incorrect, please try again');
+  }
+}
+
+/**
+ * signup user by calling /auth/signup, and after user signed up, call login.
+ * @param userPayload
+ * @returns {Promise<Error>}
+ */
+async function signup(userPayload) {
+  try {
+    const response = await fetch(`${url}/auth/signup/`, {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userPayload), // body data type must match "Content-Type" header
+    });
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    return new Error('Password or username incorrect, please try again');
+  }
+}
+
+/**
+ * set the user access token
+ * @param token
+ */
+function setUserToken(token) {
+  localStorage.setItem('userToken', token);
+}
+
+/**
+ * Simply call load challenges from server instead of doing a local storage fetch
  * @returns {JSON} The challenge list JSON
  */
-function getChallenges() {
-  return JSON.parse(localStorage.getItem('challenges'));
+async function getChallenges() {
+  const challenges = await loadChallengesFromServer();
+  return challenges.challenges;
 }
 
 database.loadChallenges = loadChallenges;
 database.addRecipe = addRecipe;
 database.updateRecipe = updateRecipe;
 database.deleteRecipe = deleteRecipe;
-database.completeRecipe = completeRecipe;
 database.getBySpice = getBySpice;
 database.getByName = getByName;
 database.getById = getById;
+database.completeRecipe = completeRecipe;
 database.getChallenges = getChallenges;
+database.login = login;
+database.signup = signup;
