@@ -50,6 +50,23 @@ async function loadChallengesFromServer() {
  */
 async function addRecipe(recipeJSON) {
   // TODO: fetch POST /recipe with recipeJSON as the body. https://github.com/cse112-group10/cse112-sp22-group10/blob/main/source/backend/routes/recipes.js#L104
+  try {
+    const recipesArray = await fetch(`${url}/recipes/searchByTitle/${queryLower}`);
+    const result = await recipesArray.json();
+     if (result == recipeJSON.recipeId) { //Checks if recipe of same name already exists
+       const response = await fetch(`${url}/users/recipe/${recipeJSON.recipeId}`, {
+         method: 'POST',
+         headers: {
+           Authorization: `Bearer ${localStorage.getItem('userToken')}`,
+         },
+         body: recipeJSON,
+       });
+       return true;
+     }
+     return false;
+   } catch (err){
+     throw new Error(err);
+   }
 }
 
 /**
