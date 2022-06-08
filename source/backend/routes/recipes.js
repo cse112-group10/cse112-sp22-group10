@@ -178,10 +178,6 @@ router.post('/', verifyUserToken, async (req, res) => {
     // save the req.body.ingredients into another variable : ingredients
     const { userId } = req.userInfo;
     newRecipe.userId = userId;
-    // hard code it to no challenges for now as in the future user should be able to select a
-    // challenge this recipe is in.
-    newRecipe.challenge = 'No Challenge';
-    delete newRecipe.challenges;
 
     const ingredients = newRecipe.ingredientList;
     delete newRecipe.ingredientList;

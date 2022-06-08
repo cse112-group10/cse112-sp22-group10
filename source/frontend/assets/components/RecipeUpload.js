@@ -465,7 +465,9 @@ class RecipeUpload extends HTMLElement {
         totalTime: totalTimeArr[0] * 60 + totalTimeArr[1],
         ingredientList: [],
         directions: [],
-        challenges: [],
+        // hard code it to no challenges for now as in the future user should be able to select a
+        // challenge this recipe is in.
+        challenge: 'No Challenge',
       };
 
       const divIngredients = this.shadowRoot.getElementById('ingredients');
