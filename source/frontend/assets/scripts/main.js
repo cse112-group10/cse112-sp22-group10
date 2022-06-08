@@ -261,6 +261,8 @@ async function bindSlider() {
       recipeList = await database.getBySpice(spiceLevel);
       if (recipeList.length > 0) {
         createRecipeCards(recipeList);
+      } else {
+        document.getElementById('middle-title').innerHTML = 'No results found!';
       }
     } catch (err) {
       console.log(`Error fetching recipes: ${err}`);
@@ -354,6 +356,8 @@ async function displaySearchCards() {
         recipeList = await database.getByName(searchString);
         if (recipeList.length > 0) {
           createRecipeCards(recipeList);
+        } else {
+          document.getElementById('middle-title').innerHTML = 'No results found!';
         }
       } catch (err) {
         console.log(`Error fetching recipes: ${err}`);
