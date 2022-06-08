@@ -74,7 +74,7 @@ class RecipeCard extends HTMLElement {
 
     .checkmark {
       position: absolute;
-      transform: translate(60%, 50%); 
+      margin: auto;
       font-size: 75px;
     }
 
