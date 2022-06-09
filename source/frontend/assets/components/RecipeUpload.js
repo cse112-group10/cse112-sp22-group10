@@ -88,6 +88,7 @@ class RecipeUpload extends HTMLElement {
       textarea {
         width: 100%;
         margin: 5px;
+        resize: none;
       }
 
       input[type="button"]:active {
@@ -169,6 +170,7 @@ class RecipeUpload extends HTMLElement {
         textarea, select {
           background-color: var(--bg-color);
           color: var(--font-color);
+          resize: none;
         }
 
 

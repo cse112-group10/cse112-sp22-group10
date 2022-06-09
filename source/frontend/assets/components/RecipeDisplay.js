@@ -53,7 +53,8 @@ class RecipeDisplay extends HTMLElement {
         margin-left: auto;
         margin-right: auto;
         height: auto;
-        border: 1px black
+        border-radius: 20px;
+        border: 2px black;
       }
 
       .recipe-title {
@@ -120,6 +121,7 @@ class RecipeDisplay extends HTMLElement {
 
       #recipe-ingredients {
         border: 2px solid black;
+        border-radius: 20px;
         padding: 15px;
         background: white;
         max-width: 765px;
@@ -135,6 +137,7 @@ class RecipeDisplay extends HTMLElement {
 
       #recipe-directions {
         border: 2px solid black;
+        border-radius: 20px;
         padding: 15px;
         background: white;
         max-width: 765px;
@@ -152,10 +155,17 @@ class RecipeDisplay extends HTMLElement {
         break-inside: avoid-column;
         list-style: none;
         margin-left: 8px;
+        margin-top: 10px;
       }
       
       input[type="checkbox"] {
         margin-left: -8px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid black;
+        border-radius: 20px;
+        margin-right: 10px;
+        vertical-align: middle;
       }
 
       .challenge-header > li {
@@ -169,33 +179,6 @@ class RecipeDisplay extends HTMLElement {
         font-family: 'Mochiy Pop P One', sans-serif;
         border: 2px solid black;
         cursor: pointer;
-      }
-
-      .reaction-wrapper-img {
-        display: block;
-        justify-content: center;
-        align-items: right;
-        margin-right: auto;
-        margin-left: auto;
-        width: 50%;
-      }
-
-      .reaction-wrapper > :not(input[type="button"]) {
-        display: block;
-        justify-content: center;
-        align-items: right;
-        margin-right: auto;
-        margin-left: auto;
-        width: 23%;
-      }
-
-      .reaction-wrapper > input[type="button"] {
-        display: block;
-        justify-content: center;
-        align-items: right;
-        margin-right: auto;
-        margin-left: auto;
-        width: 80px;
       }
 
       input[type="button"]:active {
