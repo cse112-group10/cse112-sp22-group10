@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/ChallengeBar.js</title>
+    <title>JSDoc: Class: UserPage</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,126 +17,137 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/ChallengeBar.js</h1>
+    <h1 class="page-title">Class: UserPage</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>// ChallengeBar.js
+        <h2><span class="attribs"><span class="type-signature"></span></span>UserPage<span class="signature">()</span><span class="type-signature"></span></h2>
+        
+    
+</header>
 
-/**
- * Creates the challenge data to display the progress bar and appends it to eft side
- * of the main page.
- * @param {json} data The json containing the data to create the card.
- */
-class ChallengeBar extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
+<article>
+    <div class="container-overview">
+    
+        
 
-  set data(data) {
-    if (!data) return;
+    
 
-    const challenge = document.createElement('article');
-    const style = document.createElement('style');
+    
+    <h4 class="name" id="UserPage"><span class="type-signature"></span>new UserPage<span class="signature">()</span><span class="type-signature"></span></h4>
+    
 
-    style.innerHTML = `
-      h3 {
-        font-family: 'Mochiy Pop P One', sans-serif;
-        cursor: pointer;
-      }
+    
 
-      .progress {
-        width: 100%;
-        background-color: var(--ec-white);
-        border-radius: 20px
-      }
 
-      .my-bar {
-        width: 0%;
-        height: 30px;
-        background-color: rgb(202, 85, 7);
-        text-align: center;
-        line-height: 30px;
-        color: black;
-        border-radius: 388px;
-      }
 
-      .challenge-badge {
-        height: 45px;
-        width: 45px;
-        display: inline;
-        position: relative;
-        margin-left: 10px;
-        margin-bottom: -10px;
-         
-      }
+<div class="description">
+    Constructor builds the layout for the recipe page
+</div>
 
-      @media (prefers-color-scheme: dark) {
 
-        h3 {
-          color: var(--font-color);
-        }
 
-        .progress {
-          background-color: var(--border-color);
-        }
 
-        .my-bar {
-          background-color: rgb(202, 85, 7);
-          color: var(--bg-color-red);
-        }
-      }
-    `;
 
-    const elem = document.createElement('div');
-    elem.classList.add('challenge-bar');
 
-    const title = document.createElement('h3');
-    title.classList.add('challenge-title');
-    title.innerText = data.title;
-    elem.appendChild(title);
 
-    const badge = document.createElement('img');
-    badge.classList.add('challenge-badge');
-    badge.src = data.icon;
-    title.appendChild(badge);
 
-    const progress = document.createElement('div');
-    progress.classList.add('progress');
-    const bar = document.createElement('div');
-    bar.classList.add('my-bar');
-    progress.appendChild(bar);
-    elem.appendChild(progress);
 
-    const width = Math.round((data.numberCompleted / data.total) * 100);
-    const id = setInterval(frame, 10);
-    /**
-     * Sets the interval for the progress bar
-     */
-    function frame() {
-      if (width > 100) {
-        clearInterval(id);
-      } else {
-        bar.style.width = `${width}%`;
-        bar.innerHTML = `${width}%`;
-      }
-    }
 
-    challenge.append(elem);
-    this.shadowRoot.append(style, elem);
-  }
-}
 
-customElements.define('challenge-bar', ChallengeBar);
-</code></pre>
-        </article>
-    </section>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_UserPage.js.html">components/UserPage.js</a>, <a href="components_UserPage.js.html#line8">line 8</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

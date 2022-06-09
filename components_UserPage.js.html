@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/ChallengeBar.js</title>
+    <title>JSDoc: Source: components/UserPage.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/ChallengeBar.js</h1>
+    <h1 class="page-title">Source: components/UserPage.js</h1>
 
     
 
@@ -26,114 +26,165 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>// ChallengeBar.js
+            <pre class="prettyprint source linenums"><code>import { database } from '../scripts/database.js';
 
-/**
- * Creates the challenge data to display the progress bar and appends it to eft side
- * of the main page.
- * @param {json} data The json containing the data to create the card.
- */
-class ChallengeBar extends HTMLElement {
+// RecipeUpload.js
+class UserPage extends HTMLElement {
+  /**
+   * Constructor builds the layout for the recipe page
+   */
   constructor() {
     super();
+    // Create Shadow DOM
     this.attachShadow({ mode: 'open' });
-  }
 
-  set data(data) {
-    if (!data) return;
+    const styles = document.createElement('style');
+    const article = document.createElement('article');
 
-    const challenge = document.createElement('article');
-    const style = document.createElement('style');
+    this.isCreate = true;
 
-    style.innerHTML = `
-      h3 {
-        font-family: 'Mochiy Pop P One', sans-serif;
-        cursor: pointer;
+    styles.innerHTML = `
+      article {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 50%;
+        background-color: #ee6858;
+        padding: 15px 30px;
+        border-radius: 20px;
       }
 
-      .progress {
-        width: 100%;
-        background-color: var(--ec-white);
-        border-radius: 20px
-      }
-
-      .my-bar {
-        width: 0%;
-        height: 30px;
-        background-color: rgb(202, 85, 7);
+      h1 {
         text-align: center;
-        line-height: 30px;
-        color: black;
-        border-radius: 388px;
       }
 
-      .challenge-badge {
-        height: 45px;
-        width: 45px;
-        display: inline;
-        position: relative;
-        margin-left: 10px;
-        margin-bottom: -10px;
-         
+      textarea {
+        width: 100%;
+        margin: 5px;
+      }
+
+
+      button {
+        font-size: 18px;
+        background-color: transparent;
+        cursor: pointer;
+        font-weight: bold;
+        padding-bottom: 2px;
+        // height: 25px;
+        // width: 20px;
+        color: #767676;
+        font-family: 'Mochiy Pop P One', sans-serif;
+        box-sizing: border-box;
+        line-height: 25px;
+        //border: transparent;
+        cursor: pointer;
+        border-radius: 20px;
+        font-family: 'Mochiy Pop P One', sans-serif;
       }
 
       @media (prefers-color-scheme: dark) {
 
-        h3 {
+        article {
+          background-color: var(--bg-color-red);
+        }
+
+        h1,
+        h2,
+        h4,
+        p,
+        button,
+        t,
+        ul,
+        li{
           color: var(--font-color);
         }
 
-        .progress {
-          background-color: var(--border-color);
+        input:not([type='button']) {
+          background-color: var(--bg-color);
+          color: var(--font-color);
         }
 
-        .my-bar {
-          background-color: rgb(202, 85, 7);
-          color: var(--bg-color-red);
+        input[type='button']{
+          background-color: var(--bg-color);
+          border: 2px solid var(--font-color);
+          color: var(--font-color);
         }
+
+
       }
+
+      
+      .row {
+        display: flex;
+      }
+      
+      .column {
+        flex: 50%;
+      }
+     
+      
     `;
 
-    const elem = document.createElement('div');
-    elem.classList.add('challenge-bar');
+    article.innerHTML = `
+    
+    &lt;h1 id="user-name">User Page&lt;/h1>
 
-    const title = document.createElement('h3');
-    title.classList.add('challenge-title');
-    title.innerText = data.title;
-    elem.appendChild(title);
+    &lt;div class="row">
+      &lt;div class="column" style="align-self: left;">
+        &lt;h2>User Name&lt;/h2>
+        &lt;p>user-email&lt;/p>
+      &lt;/div>
+      &lt;div class="column">
+        &lt;button>Change Password&lt;/button>
+        &lt;button>Change e-mail&lt;/button>
+      &lt;/div>
+    &lt;/div>
 
-    const badge = document.createElement('img');
-    badge.classList.add('challenge-badge');
-    badge.src = data.icon;
-    title.appendChild(badge);
+    &lt;div>
+      &lt;button>EXPAND&lt;/button>
+      &lt;t color=var(--font-color)>|&lt;/t>
+      &lt;button>COLLAPSE&lt;/button>
+    &lt;/div>
 
-    const progress = document.createElement('div');
-    progress.classList.add('progress');
-    const bar = document.createElement('div');
-    bar.classList.add('my-bar');
-    progress.appendChild(bar);
-    elem.appendChild(progress);
+    &lt;button type="button" class="collapsible">SAVED RECIPES&lt;/button>
+    &lt;div class="saved-recipes">
+      &lt;ul>
+        &lt;li>Recipe 1&lt;/li>
+        &lt;li>Recipe 2&lt;/li>
+        &lt;li>Recipe 3&lt;/li>
+      &lt;/ul>   
+    &lt;/div>
 
-    const width = Math.round((data.numberCompleted / data.total) * 100);
-    const id = setInterval(frame, 10);
-    /**
-     * Sets the interval for the progress bar
-     */
-    function frame() {
-      if (width > 100) {
-        clearInterval(id);
-      } else {
-        bar.style.width = `${width}%`;
-        bar.innerHTML = `${width}%`;
-      }
-    }
+    &lt;button type="button" class="collapsible">COMPLETED RECIPES&lt;/button>
+    &lt;div class="completed-recipes">
+      &lt;ul>
+        &lt;li>Recipe 1&lt;/li>
+        &lt;li>Recipe 2&lt;/li>
+        &lt;li>Recipe 3&lt;/li>
+      &lt;/ul>   
+    &lt;/div>
 
-    challenge.append(elem);
-    this.shadowRoot.append(style, elem);
+    &lt;button type="button" class="collapsible">CHALLENGES&lt;/button>
+    &lt;div class="challenges">
+      &lt;ul>
+        &lt;li>Recipe 1&lt;/li>
+        &lt;li>Recipe 2&lt;/li>
+        &lt;li>Recipe 3&lt;/li>
+      &lt;/ul>   
+    &lt;/div>
+
+    
+    
+    `;
+    
+    
+
+    this.shadowRoot.append(styles, article);
   }
+  
 }
 
-customElements.define('challenge-bar', ChallengeBar);
+customElements.define('user-page', UserPage);
 </code></pre>
         </article>
     </section>

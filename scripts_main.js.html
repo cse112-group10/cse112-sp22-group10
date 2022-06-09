@@ -36,6 +36,7 @@ const router = new Router(() => {
   document.querySelector('.section--main-page').classList.add('shown');
   document.querySelector('.section--recipe-display').classList.remove('shown');
   document.querySelector('.section--recipe-upload').classList.remove('shown');
+  document.querySelector('.section--user-page').classList.remove('shown');
 });
 
 const [recommendTitle, searchTitle] = [
@@ -72,6 +73,8 @@ async function init() {
   onLoginFormSubmit();
   onSignupFormSubmit();
   attachLoggedInComponents();
+  addUserPage();
+  bindUserPage();
 }
 
 /**
@@ -98,6 +101,7 @@ function createRecipeCards(recipes) {
       document.querySelector('.section--main-page').classList.remove('shown');
       document.querySelector('.section--recipe-display').classList.add('shown');
       document.querySelector('.section--recipe-upload').classList.remove('shown');
+      document.querySelector('.section--user-page').classList.remove('shown');
       document.querySelector('recipe-display').data = recipe;
       bindEditButton(document.querySelector('recipe-display').shadowRoot.getElementById('editButton'), page);
     });
@@ -106,6 +110,7 @@ function createRecipeCards(recipes) {
       document.querySelector('.section--main-page').classList.remove('shown');
       document.querySelector('.section--recipe-display').classList.remove('shown');
       document.querySelector('.section--recipe-upload').classList.add('shown');
+      document.querySelector('.section--user-page').classList.remove('shown');
       document.querySelector('recipe-upload').data = recipe;
       bindSubmitButton(document.querySelector('recipe-upload').shadowRoot.getElementById('submitButton'), page);
       bindDeleteButton(document.querySelector('recipe-upload').shadowRoot.getElementById('deleteButton'));
@@ -256,6 +261,7 @@ function addCreateRecipe() {
     document.querySelector('.section--main-page').classList.remove('shown');
     document.querySelector('.section--recipe-display').classList.remove('shown');
     document.querySelector('.section--recipe-upload').classList.add('shown');
+    document.querySelector('.section--user-page').classList.remove('shown');
     document.querySelector('recipe-upload').data = null;
     bindSubmitButton(document.querySelector('recipe-upload').shadowRoot.getElementById('submitButton'), 'create');
     bindCancelButton(document.querySelector('recipe-upload').shadowRoot.getElementById('cancelButton'), 'create');
@@ -494,9 +500,10 @@ async function onSignupFormSubmit() {
   });
 }
 
+
 /**
  * attach all logged in components: like the login icon, etc.
- */
+ */ 
 function attachLoggedInComponents() {
   if (localStorage.getItem('userToken') !== null) {
     document.getElementById('login-icon').hidden = false;
@@ -505,6 +512,29 @@ function attachLoggedInComponents() {
     document.getElementById('login-icon').hidden = true;
     document.getElementById('login-button').hidden = false;
   }
+}
+
+// ************* User Page Functions
+/**
+ * Navigate to user page
+ */
+ function bindUserPage() {
+  const button = document.getElementById('user-button');
+  button.addEventListener('click', () => {
+    router.navigate('user', false);
+  });
+}
+
+/**
+ * Add user page to navigation
+ */
+function addUserPage() {
+  router.addPage('user', () => {
+    document.querySelector('.section--main-page').classList.remove('shown');
+    document.querySelector('.section--recipe-display').classList.remove('shown');
+    document.querySelector('.section--recipe-upload').classList.remove('shown');
+    document.querySelector('.section--user-page').classList.add('shown');
+  });
 }
 </code></pre>
         </article>
@@ -516,13 +546,13 @@ function attachLoggedInComponents() {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#attachLoggedInComponents">attachLoggedInComponents</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#onLoginFormSubmit">onLoginFormSubmit</a></li><li><a href="global.html#onSignupFormSubmit">onSignupFormSubmit</a></li><li><a href="global.html#setUserToken">setUserToken</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ChallengeBar.html">ChallengeBar</a></li><li><a href="RecipeCard.html">RecipeCard</a></li><li><a href="RecipeDisplay.html">RecipeDisplay</a></li><li><a href="RecipeUpload.html">RecipeUpload</a></li><li><a href="Router_Router.html">Router</a></li><li><a href="UserPage.html">UserPage</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addCreateRecipe">addCreateRecipe</a></li><li><a href="global.html#addRecipe">addRecipe</a></li><li><a href="global.html#addUserPage">addUserPage</a></li><li><a href="global.html#attachLoggedInComponents">attachLoggedInComponents</a></li><li><a href="global.html#bindCancelButton">bindCancelButton</a></li><li><a href="global.html#bindCreateRecipe">bindCreateRecipe</a></li><li><a href="global.html#bindDeleteButton">bindDeleteButton</a></li><li><a href="global.html#bindEditButton">bindEditButton</a></li><li><a href="global.html#bindEscKey">bindEscKey</a></li><li><a href="global.html#bindPopstate">bindPopstate</a></li><li><a href="global.html#bindProgressBar">bindProgressBar</a></li><li><a href="global.html#bindRecipeCard">bindRecipeCard</a></li><li><a href="global.html#bindSlider">bindSlider</a></li><li><a href="global.html#bindSubmitButton">bindSubmitButton</a></li><li><a href="global.html#bindUserPage">bindUserPage</a></li><li><a href="global.html#calculateTime">calculateTime</a></li><li><a href="global.html#clickLogoToGoHome">clickLogoToGoHome</a></li><li><a href="global.html#completeRecipe">completeRecipe</a></li><li><a href="global.html#createCheckbox">createCheckbox</a></li><li><a href="global.html#createProgressBars">createProgressBars</a></li><li><a href="global.html#createRecipeCards">createRecipeCards</a></li><li><a href="global.html#deleteRecipe">deleteRecipe</a></li><li><a href="global.html#displaySearchCards">displaySearchCards</a></li><li><a href="global.html#getById">getById</a></li><li><a href="global.html#getByName">getByName</a></li><li><a href="global.html#getBySpice">getBySpice</a></li><li><a href="global.html#getChallenges">getChallenges</a></li><li><a href="global.html#getIngredient">getIngredient</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#loadChallengesFromServer">loadChallengesFromServer</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#onLoginFormSubmit">onLoginFormSubmit</a></li><li><a href="global.html#onSignupFormSubmit">onSignupFormSubmit</a></li><li><a href="global.html#setUserToken">setUserToken</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#sliderSpiceLevel">sliderSpiceLevel</a></li><li><a href="global.html#triggerSlider">triggerSlider</a></li><li><a href="global.html#updateRecipe">updateRecipe</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Thu Jun 09 2022 02:20:27 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Thu Jun 09 2022 02:48:05 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
