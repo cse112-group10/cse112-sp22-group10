@@ -1,6 +1,9 @@
 # cse112-sp22-group10
 This is the repo for team 10 adopted from team 33 of fall 21. This is a recipe manager application for spicy enthusiast!
 
+[public video](https://youtu.be/3sGnV58i198) <br>
+[private video](https://youtu.be/sHeqs-03wHo) 
+
 Our deployed site: https://exploding-kitchen.netlify.app/
 
 Function documentation can be found [here](https://cse110-fa21-group33.github.io/cse110-fa21-group33/). 

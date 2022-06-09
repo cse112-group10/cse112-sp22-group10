@@ -53,7 +53,8 @@ class RecipeDisplay extends HTMLElement {
         margin-left: auto;
         margin-right: auto;
         height: auto;
-        border: 1px black
+        border-radius: 20px;
+        border: 2px black;
       }
 
       .recipe-title {
@@ -120,6 +121,7 @@ class RecipeDisplay extends HTMLElement {
 
       #recipe-ingredients {
         border: 2px solid black;
+        border-radius: 20px;
         padding: 15px;
         background: white;
         max-width: 765px;
@@ -135,6 +137,7 @@ class RecipeDisplay extends HTMLElement {
 
       #recipe-directions {
         border: 2px solid black;
+        border-radius: 20px;
         padding: 15px;
         background: white;
         max-width: 765px;
@@ -152,10 +155,17 @@ class RecipeDisplay extends HTMLElement {
         break-inside: avoid-column;
         list-style: none;
         margin-left: 8px;
+        margin-top: 10px;
       }
       
       input[type="checkbox"] {
         margin-left: -8px;
+        width: 16px;
+        height: 16px;
+        border: 2px solid black;
+        border-radius: 20px;
+        margin-right: 10px;
+        vertical-align: middle;
       }
 
       .challenge-header > li {
@@ -169,33 +179,6 @@ class RecipeDisplay extends HTMLElement {
         font-family: 'Mochiy Pop P One', sans-serif;
         border: 2px solid black;
         cursor: pointer;
-      }
-
-      .reaction-wrapper-img {
-        display: block;
-        justify-content: center;
-        align-items: right;
-        margin-right: auto;
-        margin-left: auto;
-        width: 50%;
-      }
-
-      .reaction-wrapper > :not(input[type="button"]) {
-        display: block;
-        justify-content: center;
-        align-items: right;
-        margin-right: auto;
-        margin-left: auto;
-        width: 23%;
-      }
-
-      .reaction-wrapper > input[type="button"] {
-        display: block;
-        justify-content: center;
-        align-items: right;
-        margin-right: auto;
-        margin-left: auto;
-        width: 80px;
       }
 
       input[type="button"]:active {
@@ -310,11 +293,41 @@ class RecipeDisplay extends HTMLElement {
               <button class="recipe-button" id="made-this-button">I Made This!</button>
             </div>
             <br>
+            <div class="reaction-wrapper-img">
+              <img style="display:none;" src="assets/images/placeholder.png" id="imgPreview" alt="temp" width="400" height="400" referrerpolicy="no-referrer">
+              <br>
+            </div>
+            <div class="reaction-wrapper">
+                <input style="display:none;" type="file" id="imgUpload" accept="image/*"></input>
+                <br>
+            </div>
+            <div class="reaction-wrapper">
+                <input style="display:none;" id="submitButton" class="Submit" type="button" value="Submit">
+            </div>
           </article>
         </main>
       </div>
       `;
     this.shadowRoot.append(styles, article);
+  }
+
+  GetImgurImage() {
+    const imgUpload = this.shadowRoot.getElementById('imgUpload');
+    const imgPreview = this.shadowRoot.getElementById('imgPreview');
+    // const url = this.shadowRoot.getElementById('url');
+    imgUpload.addEventListener('change', (ev) => {
+      const formdata = new FormData();
+      formdata.append('image', ev.target.files[0]);
+      fetch('https://api.imgur.com/3/image/', {
+        method: 'post',
+        headers: {
+          Authorization: 'Client-ID 0f695d3611373b4',
+        },
+        body: formdata,
+      }).then((data) => data.json()).then((data) => {
+        imgPreview.src = data.data.link;
+      });
+    });
   }
 
   /**
@@ -374,6 +387,17 @@ class RecipeDisplay extends HTMLElement {
                 <button class="recipe-button" id="made-this-button">I Made This!</button>
               </div>
               <br>
+              <div class="reaction-wrapper-img">
+                <img style="display:none;" src="assets/images/placeholder.png" id="imgPreview" alt="temp" width="400" height="400" referrerpolicy="no-referrer">
+                <br>
+              </div>
+              <div class="reaction-wrapper">
+                <input style="display:none;" type="file" id="imgUpload" accept="image/*"></input>
+                <br>
+              </div>
+              <div class="reaction-wrapper">
+                <input style="display:none;" id="submitButton" class="Submit" type="button" value="Submit">
+              </div>
             </article>
           </main>
         </div>
@@ -416,10 +440,21 @@ class RecipeDisplay extends HTMLElement {
     const btn = this.shadowRoot.getElementById('made-this-button');
     if (data.completed === true) {
       const newBox = document.createElement('completed');
-      newBox.classList.add('recipe-title');
-      newBox.innerHTML = '🎉 Completed! 🎉';
+      newBox.innerHTML = 'Completed!';
+      newBox.innerHTML += '<br><br>Upload a picture of your reaction!';
       btn.parentElement.appendChild(newBox);
       btn.parentElement.removeChild(btn);
+      const uploadImg = this.shadowRoot.getElementById('imgUpload');
+      const submitBtn = this.shadowRoot.getElementById('submitButton');
+      const imgPreview = this.shadowRoot.getElementById('imgPreview');
+      uploadImg.style.display = '';
+      submitBtn.style.display = '';
+      imgPreview.style.display = '';
+      if ('reactions' in data) {
+        imgPreview.src = data.reactions;
+      }
+      this.GetImgurImage();
+      this.SubmitReaction();
     } else {
       this.bindCompleteButton(data);
     }
@@ -427,6 +462,18 @@ class RecipeDisplay extends HTMLElement {
     if (data.challenge !== 'No Challenge') {
       this.ShowChallenge(data);
     }
+  }
+
+  /**
+   * Creates the reaction section if the recipe was completed
+   */
+  SubmitReaction() {
+    const button = this.shadowRoot.getElementById('submitButton');
+    button.addEventListener('click', async () => {
+      const imgPreview = this.shadowRoot.getElementById('imgPreview');
+      this.json.reactions = imgPreview.src;
+      await database.updateRecipe(this.json);
+    });
   }
 
   /**
